@@ -1,0 +1,61 @@
+1.
+	select distinct user.name , user.review_count , user.yelping_since
+	from yelp.user
+	where user.name = "Lisa" 
+	and user.review_count > 500
+	order by user.yelping_since asc;
+
+
+2.
+	select user.user_id , business.business_id , reviews.review_id
+	from yelp.user , yelp.reviews, yelp.business
+	where reviews.business_id = business.business_id
+    and user.user_id = reviews.review_id
+    and user.name = 'Lisa'
+    and business.name = 'Gab & Eat';
+
+
+3.
+	select reviews.business_id , 'Yes' as answer
+	from yelp.reviews , yelp.reviews_pos_neg
+	where reviews.review_id = reviews_pos_neg.review_id
+	and reviews.business_id = 'OmpbTu4deR3ByOo7btTTZw'
+	group by reviews.business_id 
+	having (sum(reviews_pos_neg.positive) > 0)
+   
+	union
+	
+	select reviews.business_id , 'No' as answer
+	from yelp.reviews , yelp.reviews_pos_neg
+	where reviews.review_id = reviews_pos_neg.review_id
+	and reviews.business_id = 'OmpbTu4deR3ByOo7btTTZw'
+	group by reviews.business_id 
+	having (sum(reviews_pos_neg.positive) = 0);
+	
+	
+4.
+	select reviews.business_id , count(reviews_pos_neg.positive)
+	from yelp.reviews , yelp.reviews_pos_neg
+	where reviews.review_id = reviews_pos_neg.review_id 
+	and reviews.date <= '2014-12-31' 
+	and reviews.date >= '2014-01-01' 
+	group by reviews.business_id
+	having (count(reviews_pos_neg.positive) > 10)
+    
+	
+5.
+	select reviews.user_id , count(reviews.review_id)
+	from yelp.reviews , yelp.business , yelp.business_category , yelp.category
+	where reviews.business_id = business.business_id
+	and business.business_id = business_category.business_id
+	and business_category.category_id = category.category_id
+	and category.category = 'Mobile Phones'
+	group by reviews.user_id
+	
+	
+6.
+	select reviews.votes_useful , reviews.user_id , business.name
+    from yelp.reviews , yelp.business
+    where reviews.business_id = business.business_id
+    and business.name = 'Midas'
+    order by reviews.votes_useful desc;
